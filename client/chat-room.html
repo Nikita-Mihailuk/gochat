@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Room</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container chat-room">
+    <div id="participants" class="participants-list">
+      <h3>Участники</h3>
+      <ul id="participants-list"></ul>
+    </div>
+    <div class="chat-wrapper">
+      <button class="back-button" onclick="goBackToHome()">Назад на главную</button>
+      <h2>Чат комнаты</h2>
+      <div id="messages" class="messages"></div>
+      <div class="input-group">
+        <input type="text" id="new-message" placeholder="Введите сообщение">
+        <button class="send-button" onclick="sendMessage()">Отправить</button>
+      </div>
+    </div>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>

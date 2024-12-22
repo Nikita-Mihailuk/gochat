@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav>
+    <button onclick="showTab('rooms')">Комнаты</button>
+    <button onclick="showTab('profile')">Профиль</button>
+    <button onclick="logout()">Выйти</button>
+  </nav>
+
+  <div id="rooms" class="tab-content">
+    <h2>Комнаты</h2>
+    <ul id="room-list"></ul>
+    <input type="text" id="new-room" placeholder="Имя комнаты">
+    <button onclick="createRoom()">Создать комнату</button>
+  </div>
+
+  <div id="profile" class="tab-content" style="display: none;">
+    <h2>Профиль</h2>
+    <img id="profile-photo" src="default.jpg" alt="Profile">
+    <p id="profile-email"></p>
+    <p id="profile-name-display"></p>
+    <button onclick="openUpdateProfileDialog()">Изменить профиль</button>
+  </div>
+  
+<div id="update-profile-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Изменение профиля</h3>
+    <label for="update-name">Новое имя:</label>
+    <input type="text" id="update-name" placeholder="Введите новое имя">
+
+    <label for="current-password">Текущий пароль:</label>
+    <input type="password" id="current-password" placeholder="Введите текущий пароль(обязательное поле)">
+
+    <label for="new-password">Новый пароль:</label>
+    <input type="password" id="new-password" placeholder="Введите новый пароль">
+
+    <label for="profile-photo-upload">Фото профиля:</label>
+    <input type="file" id="profile-photo-upload" accept="image/*">
+
+    <button onclick="saveUpdatedProfile()">Сохранить</button>
+    <button onclick="closeUpdateProfileDialog()">Отмена</button>
+  </div>
+</div>
+  <script src="scripts.js"></script>
+</body>
+</html>

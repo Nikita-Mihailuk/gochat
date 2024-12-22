@@ -1,0 +1,9 @@
+listen:
+  bindIp: 192.168.0.104
+  port: 8080
+database:
+  host: localhost
+  port: 5432
+  userName: postgres
+  password: "00000000"
+  dbName: chatTest
