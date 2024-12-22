@@ -1,0 +1,388 @@
+/* styles.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box; 
+}
+
+.container {
+  background-color: #f4f4f4;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+input {
+  width: calc(100% - 20px); 
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px;
+  background-color: #0000ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #000080;
+}
+
+a {
+  color: #0000ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+nav button {
+  flex: 1;
+  max-width: 120px;
+}
+
+.tab-content {
+  width: 100%;
+  max-width: 600px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="password"],
+.modal-content input[type="file"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-content button {
+  margin-top: 20px;
+  width: 100%;
+}
+
+#profile-photo {
+  display: block;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%; 
+  border: 2px solid #000000; 
+  margin: 0 auto 20px; 
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.message-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.chat-room {
+  max-width: 900px;
+  max-height: 750px;
+  position:absolute;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 600px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-content strong {
+  font-size: 12px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.message.sender {
+  justify-content: flex-end;
+}
+
+.message.sender .message-content {
+  background-color: #d1e7ff;
+  text-align: right;
+}
+
+.message.sender strong {
+  text-align: right;
+}
+
+.message.other {
+  justify-content: flex-start;
+}
+
+.message.other .message-content {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.message.other strong {
+  text-align: left;
+}
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  background-color: #0000ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  margin-left: 16%;
+}
+
+.input-group input {
+  flex: 1; 
+}
+
+.input-group .send-button {
+  flex-shrink: 0; 
+  height: 40px; 
+}
+
+.message.sender .message-content strong,
+.message.sender .message-avatar {
+  display: none; 
+}
+
+.participants-list {
+  width: 15%; 
+  float: left;
+  background-color: #f4f4f4;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  box-sizing: border-box;
+  height: 750px;
+  overflow-y: auto;
+}
+
+.participants-list h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.participants-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.participants-list .participant {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.participants-list .participant:hover {
+  background-color: #e6e6e6;
+}
+
+.participants-list .participant img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.participants-list .participant span {
+  font-size: 14px;
+  max-width: calc(100% - 50px); 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.participants-list .participant span:hover {
+  white-space: normal;
+  overflow: visible;
+}
+
+.chat-room .messages {
+  margin-left: 16%; 
+}
+
+.notification {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+  padding: 10px 20px;
+  max-width: 80%;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.join-room-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #0000ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-room-button:hover {
+  background-color: #0000ff;
+}
+
+.room-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  
+}
+
+.room-group .room-name {
+  flex: 1; 
+}
+
+.input-group .oin-room-button {
+  flex-shrink: 0; 
+  height: 40px; 
+}
