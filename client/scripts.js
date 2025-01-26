@@ -1,4 +1,5 @@
-const API_BASE = "http://192.168.0.104:8080";
+const API_BASE = "http://localhost:8080/";
+const API_V1 = `${API_BASE}api/v1/`
 let socket = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -63,9 +64,13 @@ function showTab(tabId) {
 
 async function createRoom() {
   const roomName = document.getElementById("new-room").value;
+  if (roomName.length > 30){
+    alert("Превышено допустимое количество символов")
+    return
+  }
   if (roomName) {
     try {
-      const response = await fetch(`${API_BASE}/rooms`, {
+      const response = await fetch(`${API_V1}rooms/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: roomName }),
@@ -83,7 +88,7 @@ async function createRoom() {
 
 async function loadRooms() {
   try {
-    const response = await fetch(`${API_BASE}/rooms`);
+    const response = await fetch(`${API_V1}rooms/`);
     if (response.ok) {
       const rooms = await response.json();
       const roomList = document.getElementById("room-list");
@@ -118,18 +123,17 @@ async function loginUser() {
   const password = document.getElementById("login-password").value;
 
   try {
-    const response = await fetch(`${API_BASE}/login`, {
+    const response = await fetch(`${API_V1}users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
     if (response.ok) {
       const data = await response.json();
-      const { user_id, user_name } = data;
+      const {user_id} = data;
 
       if (user_id) {
         localStorage.setItem('currentUserID', user_id);
-        localStorage.setItem('currentUserName', user_name);
         window.location.href = "home.html";
       }
     } else {
@@ -145,9 +149,14 @@ async function registerUser() {
   const password = document.getElementById("register-password").value;
   const name = document.getElementById("register-name").value;
 
+  if (email.length > 30 && password.length > 30 && name.length > 30){
+    alert("Превышено допустимое количество символов")
+    return
+  }
+
   if (email && password && name) {
     try {
-      const response = await fetch(`${API_BASE}/register`, {
+      const response = await fetch(`${API_V1}users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name }),
@@ -192,14 +201,13 @@ async function saveUpdatedProfile() {
   if (profilePhoto) formData.append("photo", profilePhoto);
 
   try {
-    const response = await fetch(`${API_BASE}/profile/${userID}`, {
+    const response = await fetch(`${API_V1}users/${userID}`, {
       method: "PATCH",
       body: formData,
     });
 
     if (response.ok) {
       alert("Профиль успешно изменён!");
-      localStorage.setItem('currentUserName', newName);
       closeUpdateProfileDialog();
       loadProfile();
     } else {
@@ -213,10 +221,14 @@ async function saveUpdatedProfile() {
 async function loadProfile() {
   try {
     const userID = localStorage.getItem("currentUserID");
-    const response = await fetch(`${API_BASE}/profile/${userID}`);
+    const response = await fetch(`${API_V1}users/${userID}`);
     if (response.ok) {
       const profile = await response.json();
-      document.getElementById("profile-photo").src = profile.photo_url || "default.jpg";
+      let photo_url = "default.jpg";
+      if (profile.photo_url !== ""){
+        photo_url = `${API_BASE}${profile.photo_url}`;
+      }
+      document.getElementById("profile-photo").src = photo_url;
       document.getElementById("profile-email").textContent = `Эл.почта: ${profile.email}`;
       document.getElementById("profile-name-display").textContent = `Имя: ${profile.name}`;
     } else {
@@ -232,7 +244,7 @@ async function joinRoom(roomID) {
     localStorage.setItem('currentRoomID', roomID);
     setupWebSocket(roomID);
 
-    const response = await fetch(`${API_BASE}/rooms/${roomID}`);
+    const response = await fetch(`${API_V1}rooms/${roomID}`);
     const messages = await response.json();
     const messagesDiv = document.getElementById('messages');
     if (!messagesDiv) {
@@ -251,7 +263,7 @@ async function joinRoom(roomID) {
 
 function setupWebSocket(roomID) {
   if (socket) socket.close();
-  socket = new WebSocket(`ws://192.168.0.104:8080/ws/${roomID}?user_id=${localStorage.getItem('currentUserID')}`);
+  socket = new WebSocket(`ws://localhost:8080/api/v1/ws/${roomID}?user_id=${localStorage.getItem('currentUserID')}`);
 
   socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
@@ -298,10 +310,15 @@ function displayMessage(message) {
     messageDiv.classList.add('sender');
     messageDiv.innerHTML = `<div class="message-content">${message.content}</div>`;
   } else {
+    let photo_url = "default.jpg";
+    console.log(message.user_avatar)
+    if (message.user_avatar !== ""){
+      photo_url = `${API_BASE}${message.user_avatar}`;
+    }
     messageDiv.classList.add('other');
     messageDiv.innerHTML = `
       <div class="message-avatar">
-        <img src="${message.user_avatar || 'default.jpg'}" alt="Avatar">
+        <img src="${photo_url}" alt="Avatar">
       </div>
       <div class="message-content">
         <strong>${message.user_name}</strong> ${message.content}
@@ -319,10 +336,14 @@ function updateParticipantsList(participants) {
 
   participants.forEach(user => {
     const participantItem = document.createElement("li");
+    let photo_url = "default.jpg";
+    if (user.photo_url !== ""){
+      photo_url = `${API_BASE}${user.photo_url}`;
+    }
     participantItem.className = "participant";
     participantItem.innerHTML = `
       <div class="message-avatar">
-        <img src="${user.photo_url || 'default.jpg'}" alt="Avatar">
+        <img src="${photo_url}" alt="Avatar">
       </div>
       <span>${user.name}</span>
     `;
@@ -337,14 +358,10 @@ function sendMessage() {
   if (!messageContent) return;
 
   const currentUserId = localStorage.getItem('currentUserID');
-  const currentUserName = localStorage.getItem('currentUserName');
-  const currentUserAvatar = localStorage.getItem('currentUserAvatar');
 
   const message = {
     user_id: parseInt(currentUserId),
-    user_name: currentUserName,
-    user_avatar: currentUserAvatar,
-    message: messageContent,
+    content: messageContent,
   };
 
   if (socket && socket.readyState === WebSocket.OPEN) {

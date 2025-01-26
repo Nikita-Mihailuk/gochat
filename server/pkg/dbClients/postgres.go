@@ -3,7 +3,7 @@ package dbClients
 import (
 	"fmt"
 	"github.com/Nikita-Mihailuk/gochat/server/internal/cfg"
-	"github.com/Nikita-Mihailuk/gochat/server/internal/users/model"
+	"github.com/Nikita-Mihailuk/gochat/server/internal/domain"
 	"github.com/Nikita-Mihailuk/gochat/server/pkg/logging"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,7 +21,7 @@ func init() {
 	getConfig := cfg.GetConfig()
 	logger := logging.GetLogger()
 
-	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
 		getConfig.Database.Host,
 		getConfig.Database.Username,
 		getConfig.Database.Password,
@@ -33,7 +33,7 @@ func init() {
 		logger.Fatal("Ошибка подключения к базе данных: " + err.Error())
 	}
 
-	err = db.AutoMigrate(&model.User{}, &model.Room{}, &model.Message{})
+	err = db.AutoMigrate(&domain.User{}, &domain.Room{}, &domain.Message{})
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
