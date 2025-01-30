@@ -1,45 +1,40 @@
-const API_BASE = "http://localhost:8080/";
+const API_BASE = "http://127.0.0.1:8080/";
 const API_V1 = `${API_BASE}api/v1/`
 let socket = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const currentPath = window.location.pathname;
-  const userID = localStorage.getItem("currentUserID");
 
   if (currentPath.endsWith("index.html")) {
-    if (userID) {
-      window.location.href = "home.html";
-    } else {
-      preventBackNavigation();
-    }
-  } else if (currentPath.endsWith("home.html")) {
-    if (!userID) {
+    preventBackNavigation();
+  } else {
+    try {
+      const isAuthenticated =  hasAccessToken();
+      if (!isAuthenticated) {
+        window.location.href = "index.html";
+      } else {
+        preventBackNavigation();
+        if (currentPath.endsWith("home.html")){
+          loadRooms();
+          loadProfile();
+        }
+        if (currentPath.endsWith("chat-room.html")) {
+          const roomID = localStorage.getItem('currentRoomID');
+          if (roomID) joinRoom(roomID);
+        }
+      }
+    } catch (err) {
+      console.error("Ошибка проверки авторизации", err);
       window.location.href = "index.html";
-    } else {
-      preventBackNavigation();
     }
-  } else if (currentPath.endsWith("chat-room.html")) {
-    if (!userID) {
-      window.location.href = "index.html";
-    } else {
-      preventBackNavigation();
-    }
-  }
 
-  if (currentPath.endsWith("home.html") && userID) {
-    loadRooms();
-    loadProfile();
-  }
-
-  if (currentPath.endsWith("chat-room.html")) {
-    const roomID = localStorage.getItem('currentRoomID');
-    if (roomID) {
-      joinRoom(roomID);
-    } else {
-      console.error("Room ID не найден в localStorage.");
-    }
   }
 });
+
+function showTab(tabId) {
+  document.querySelectorAll(".tab-content").forEach(tab => tab.style.display = "none");
+  document.getElementById(tabId).style.display = "block";
+}
 
 function preventBackNavigation() {
   history.replaceState(null, null, window.location.href);
@@ -48,38 +43,53 @@ function preventBackNavigation() {
   });
 }
 
-function logout() {
+function hasAccessToken() {
+  const response = fetch(`${API_V1}users/auth/check`, { credentials: 'include' });
+  if (response.status === 401){
+    return false
+  } else {
+    return true
+  }
+}
+
+async function fetchWithAuth(url, options = {}) {
+  let response = await fetch(url, { ...options, credentials: 'include' });
+  if (response.status === 401) {
+    const refreshResponse = await fetch(`${API_V1}users/auth/refresh`, { method: 'POST', credentials: 'include' });
+    if (refreshResponse.ok) {
+      response = await fetch(url, { ...options, credentials: 'include' });
+    }
+  }
+  return response;
+}
+
+async function logout() {
+  await fetchWithAuth(`${API_V1}users/logout`, { method: 'DELETE'});
   localStorage.clear();
   window.location.href = "index.html";
 }
 
 function goBackToHome() {
+  localStorage.clear();
   window.location.href = "home.html";
 }
 
-function showTab(tabId) {
-  document.querySelectorAll(".tab-content").forEach(tab => tab.style.display = "none");
-  document.getElementById(tabId).style.display = "block";
-}
 
 async function createRoom() {
   const roomName = document.getElementById("new-room").value;
-  if (roomName.length > 30){
-    alert("Превышено допустимое количество символов")
-    return
+  if (roomName.length > 30) {
+    alert("Превышено допустимое количество символов");
+    return;
   }
   if (roomName) {
     try {
-      const response = await fetch(`${API_V1}rooms/`, {
+      const response = await fetchWithAuth(`${API_V1}rooms/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: roomName }),
       });
-      if (response.ok) {
-        loadRooms();
-      } else {
-        handleError(response);
-      }
+      if (response.ok) loadRooms();
+      else alert("Ошибка при создании комнаты.");
     } catch (err) {
       console.error("Ошибка создания комнаты:", err);
     }
@@ -88,7 +98,7 @@ async function createRoom() {
 
 async function loadRooms() {
   try {
-    const response = await fetch(`${API_V1}rooms/`);
+    const response = await fetchWithAuth(`${API_V1}rooms/`);
     if (response.ok) {
       const rooms = await response.json();
       const roomList = document.getElementById("room-list");
@@ -127,15 +137,10 @@ async function loginUser() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: 'include'
     });
     if (response.ok) {
-      const data = await response.json();
-      const {user_id} = data;
-
-      if (user_id) {
-        localStorage.setItem('currentUserID', user_id);
-        window.location.href = "home.html";
-      }
+      window.location.href = "home.html";
     } else {
       handleError(response);
     }
@@ -187,7 +192,6 @@ async function saveUpdatedProfile() {
   const currentPassword = document.getElementById("current-password").value;
   const newPassword = document.getElementById("new-password").value;
   const profilePhoto = document.getElementById("profile-photo-upload").files[0];
-  const userID = localStorage.getItem("currentUserID");
 
   if (!currentPassword) {
     alert("Пожалуйста введите ваш текущий пароль.");
@@ -201,7 +205,7 @@ async function saveUpdatedProfile() {
   if (profilePhoto) formData.append("photo", profilePhoto);
 
   try {
-    const response = await fetch(`${API_V1}users/${userID}`, {
+    const response = await fetchWithAuth(`${API_V1}users/`, {
       method: "PATCH",
       body: formData,
     });
@@ -220,8 +224,7 @@ async function saveUpdatedProfile() {
 
 async function loadProfile() {
   try {
-    const userID = localStorage.getItem("currentUserID");
-    const response = await fetch(`${API_V1}users/${userID}`);
+    const response = await fetchWithAuth(`${API_V1}users/`);
     if (response.ok) {
       const profile = await response.json();
       let photo_url = "default.jpg";
@@ -242,9 +245,9 @@ async function loadProfile() {
 async function joinRoom(roomID) {
   try {
     localStorage.setItem('currentRoomID', roomID);
-    setupWebSocket(roomID);
+    await setupWebSocket(roomID);
 
-    const response = await fetch(`${API_V1}rooms/${roomID}`);
+    const response = await fetchWithAuth(`${API_V1}rooms/${roomID}`);
     const messages = await response.json();
     const messagesDiv = document.getElementById('messages');
     if (!messagesDiv) {
@@ -261,9 +264,16 @@ async function joinRoom(roomID) {
   }
 }
 
-function setupWebSocket(roomID) {
+
+
+async function setupWebSocket(roomID) {
+  const response = await fetchWithAuth(`${API_V1}ws/`);
+  const data = await response.json();
+  const userID = data.user_id;
+  localStorage.setItem("userID", userID)
+
   if (socket) socket.close();
-  socket = new WebSocket(`ws://localhost:8080/api/v1/ws/${roomID}?user_id=${localStorage.getItem('currentUserID')}`);
+  socket = new WebSocket(`ws://localhost:8080/api/v1/ws/${roomID}?user_id=${userID}`);
 
   socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
@@ -283,7 +293,6 @@ function setupWebSocket(roomID) {
     socket = null;
   };
 
-  socket.onopen = () => console.log(`WebSocket соединение установлено для комнаты ${roomID}`);
 }
 
 function handleError(response) {
@@ -304,14 +313,12 @@ function displayMessage(message) {
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message');
 
-  
 
-  if (message.user_id == localStorage.getItem('currentUserID')) {
+  if (message.user_id == localStorage.getItem('userID')) {
     messageDiv.classList.add('sender');
     messageDiv.innerHTML = `<div class="message-content">${message.content}</div>`;
   } else {
     let photo_url = "default.jpg";
-    console.log(message.user_avatar)
     if (message.user_avatar !== ""){
       photo_url = `${API_BASE}${message.user_avatar}`;
     }
@@ -332,7 +339,7 @@ function displayMessage(message) {
 
 function updateParticipantsList(participants) {
   const participantsList = document.getElementById("participants-list");
-  participantsList.innerHTML = ""; 
+  participantsList.innerHTML = "";
 
   participants.forEach(user => {
     const participantItem = document.createElement("li");
@@ -357,7 +364,7 @@ function sendMessage() {
 
   if (!messageContent) return;
 
-  const currentUserId = localStorage.getItem('currentUserID');
+  const currentUserId = localStorage.getItem('userID');
 
   const message = {
     user_id: parseInt(currentUserId),

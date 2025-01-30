@@ -1794,3 +1794,22 @@
 {"level":"info","time":"2025-01-26T19:43:14.355+0300","caller":"v1/users.go:49","msg":"Пользователь вошёл в систему","user_id":15}
 {"level":"info","time":"2025-01-26T19:43:20.143+0300","caller":"v1/websocket.go:30","msg":"Пользователь присоединился к чату","user_id":15,"room_id":12}
 {"level":"info","time":"2025-01-26T19:43:34.599+0300","caller":"v1/websocket.go:92","msg":"Пользователь вышел из чата","user_id":29,"room_id":12}
+{"level":"info","time":"2025-01-30T19:22:23.972+0300","caller":"cfg/config.go:35","msg":"Read application configuration"}
+{"level":"info","time":"2025-01-30T19:22:24.305+0300","caller":"app/app.go:25","msg":"Создание роутера"}
+{"level":"info","time":"2025-01-30T19:22:24.305+0300","caller":"app/app.go:41","msg":"Регистрация эндпоинтов"}
+{"level":"info","time":"2025-01-30T19:22:24.305+0300","caller":"app/app.go:53","msg":"Прослушивание сервера","bind_ip":"127.0.0.1","port":"8080"}
+{"level":"info","time":"2025-01-30T19:22:32.458+0300","caller":"v1/users.go:149","msg":"Пользователь вышел из аккаунта","user_id":"15"}
+{"level":"debug","time":"2025-01-30T19:22:57.228+0300","caller":"v1/users.go:71","msg":"Пользователь с данными токенами вошел в систему","accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNSIsImV4cCI6MTczODI1NTA3N30.gDqJwveXI5vqEZAC4l2lmHE7ZvzTljr72zPVq-W9-8Q","refreshToken":"062085dd334a49eebf892f974d1d2b1f2f126ac674f4759b290cbaf4c1c32e4b"}
+{"level":"info","time":"2025-01-30T19:23:00.659+0300","caller":"v1/websocket.go:38","msg":"Пользователь присоединился к чату","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:23:14.379+0300","caller":"v1/websocket.go:100","msg":"Пользователь вышел из чата","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:23:16.732+0300","caller":"v1/websocket.go:38","msg":"Пользователь присоединился к чату","user_id":15,"room_id":13}
+{"level":"info","time":"2025-01-30T19:23:17.622+0300","caller":"v1/websocket.go:100","msg":"Пользователь вышел из чата","user_id":15,"room_id":13}
+{"level":"info","time":"2025-01-30T19:23:27.703+0300","caller":"v1/users.go:106","msg":"Пользователь обновил профиль","user_id":15}
+{"level":"info","time":"2025-01-30T19:24:26.659+0300","caller":"v1/websocket.go:38","msg":"Пользователь присоединился к чату","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:24:49.733+0300","caller":"v1/websocket.go:100","msg":"Пользователь вышел из чата","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:24:50.971+0300","caller":"v1/websocket.go:38","msg":"Пользователь присоединился к чату","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:24:52.943+0300","caller":"v1/websocket.go:100","msg":"Пользователь вышел из чата","user_id":15,"room_id":12}
+{"level":"info","time":"2025-01-30T19:30:40.245+0300","caller":"cfg/config.go:35","msg":"Read application configuration"}
+{"level":"info","time":"2025-01-30T19:30:40.561+0300","caller":"app/app.go:25","msg":"Создание роутера"}
+{"level":"info","time":"2025-01-30T19:30:40.562+0300","caller":"app/app.go:41","msg":"Регистрация эндпоинтов"}
+{"level":"info","time":"2025-01-30T19:30:40.562+0300","caller":"app/app.go:53","msg":"Прослушивание сервера","bind_ip":"127.0.0.1","port":"8080"}

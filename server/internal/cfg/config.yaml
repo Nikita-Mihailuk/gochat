@@ -1,5 +1,5 @@
 listen:
-  bindIp: localhost
+  bindIp: 127.0.0.1
   port: 8080
 database:
   host: localhost
@@ -7,3 +7,7 @@ database:
   userName: postgres
   password: "00000000"
   dbName: chatTest
+auth:
+  accessTokenTTL: 15m
+  refreshTokenTTL: 720h # 30 days
+  secretKey: "superSecretKey"

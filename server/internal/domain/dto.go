@@ -34,3 +34,8 @@ type InputMessageDTO struct {
 	UserID  uint   `json:"user_id"`
 	Content string `json:"content"`
 }
+
+type Tokens struct {
+	AccessToken  string
+	RefreshToken string
+}

@@ -6,9 +6,12 @@ import (
 
 type User interface {
 	RegisterUserService(input domain.InputUserDTO) error
-	LoginUserService(input domain.InputUserDTO) (uint, error)
+	LoginUserService(input domain.InputUserDTO) (domain.Tokens, error)
 	GetProfileService(id uint) (domain.User, error)
 	UpdateProfileService(update domain.UpdateUserDTO) (domain.User, error)
+
+	RefreshTokens(refreshToken string) (domain.Tokens, error)
+	DeleteSessionService(userID string) error
 }
 
 type Rooms interface {

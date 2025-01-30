@@ -20,6 +20,7 @@ import (
 func Run() {
 	logger := logging.GetLogger()
 	db := dbClients.GetDB()
+	config := cfg.GetConfig()
 
 	logger.Info("Создание роутера")
 	router := gin.Default()
@@ -30,7 +31,7 @@ func Run() {
 	roomRepo := repository.NewRoomsRepository(db)
 
 	services := service.Services{
-		User:  service.NewUsersService(userRepo),
+		User:  service.NewUsersService(userRepo, config.Auth.RefreshTokenTTL, config.Auth.AccessTokenTTL),
 		Rooms: service.NewRoomsService(roomRepo),
 	}
 
@@ -46,14 +47,14 @@ func Run() {
 
 func start(router *gin.Engine) {
 
-	getConfig := cfg.GetConfig()
+	config := cfg.GetConfig()
 	logger := logging.GetLogger()
 
 	logger.Info("Прослушивание сервера",
-		zap.String("bind_ip", getConfig.Listen.BindIP),
-		zap.String("port", getConfig.Listen.Port))
+		zap.String("bind_ip", config.Listen.BindIP),
+		zap.String("port", config.Listen.Port))
 
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", getConfig.Listen.BindIP, getConfig.Listen.Port))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Listen.BindIP, config.Listen.Port))
 
 	if err != nil {
 		logger.Fatal(err.Error())

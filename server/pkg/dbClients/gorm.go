@@ -33,7 +33,7 @@ func init() {
 		logger.Fatal("Ошибка подключения к базе данных: " + err.Error())
 	}
 
-	err = db.AutoMigrate(&domain.User{}, &domain.Room{}, &domain.Message{})
+	err = db.AutoMigrate(&domain.User{}, &domain.Room{}, &domain.Message{}, &domain.Session{})
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

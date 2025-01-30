@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"github.com/Nikita-Mihailuk/gochat/server/internal/domain"
+	"github.com/Nikita-Mihailuk/gochat/server/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
@@ -13,6 +14,13 @@ import (
 func (h *HandlerV1WS) RegisterWSRouts(v1 *gin.RouterGroup) {
 	ws := v1.Group("/ws")
 	ws.GET("/:id", h.webSocketHandler)
+	authorizationGroup := ws.Group("", middleware.CheckAccessToken())
+	authorizationGroup.GET("/", h.getUserID)
+}
+
+func (h *HandlerV1WS) getUserID(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	c.JSON(http.StatusOK, gin.H{"user_id": userID})
 }
 
 func (h *HandlerV1WS) webSocketHandler(c *gin.Context) {
@@ -57,8 +65,8 @@ func (h *HandlerV1WS) webSocketHandler(c *gin.Context) {
 
 func (h *HandlerV1WS) initializeWebSocket(c *gin.Context) (uint, domain.User, *websocket.Conn, error) {
 	roomID, _ := strconv.Atoi(c.Param("id"))
-	userID, _ := strconv.Atoi(c.Query("user_id"))
-
+	userIDstr := c.Query("user_id")
+	userID, _ := strconv.Atoi(userIDstr)
 	user, err := h.services.User.GetProfileService(uint(userID))
 	if err != nil {
 		return 0, domain.User{}, nil, fmt.Errorf("Пользователь с ID %d не найден", userID)

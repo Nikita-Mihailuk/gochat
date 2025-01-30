@@ -4,6 +4,7 @@ import (
 	"github.com/Nikita-Mihailuk/gochat/server/pkg/logging"
 	"github.com/spf13/viper"
 	"sync"
+	"time"
 )
 
 type Config struct {
@@ -18,6 +19,11 @@ type Config struct {
 		Password string `yaml:"password"`
 		DBName   string `yaml:"dbName"`
 	} `yaml:"database"`
+	Auth struct {
+		AccessTokenTTL  time.Duration `yaml:"accessTokenTTL"`
+		RefreshTokenTTL time.Duration `yaml:"refreshTokenTTL"`
+		SecretKey       string        `yaml:"secretKey"`
+	}
 }
 
 var instance *Config

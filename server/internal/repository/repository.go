@@ -7,6 +7,10 @@ type User interface {
 	GetByEmail(email string) (domain.User, error)
 	GetByID(id uint) (domain.User, error)
 	Update(user *domain.User) error
+
+	GetByRefreshToken(refreshToken string) (domain.Session, error)
+	SetSession(session *domain.Session) error
+	DeleteSession(userId string) error
 }
 
 type Room interface {

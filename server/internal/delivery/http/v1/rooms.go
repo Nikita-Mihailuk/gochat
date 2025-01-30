@@ -2,12 +2,14 @@ package v1
 
 import (
 	"github.com/Nikita-Mihailuk/gochat/server/internal/domain"
+	"github.com/Nikita-Mihailuk/gochat/server/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"net/http"
 )
 
 func (h *HandlerV1HTTP) RegisterRoomsRouts(v1 *gin.RouterGroup) {
-	rooms := v1.Group("/rooms")
+	rooms := v1.Group("/rooms", middleware.CheckAccessToken())
 
 	rooms.GET("/", h.getAllRoomsHandler)
 	rooms.POST("/", h.createRoomHandler)
@@ -30,6 +32,13 @@ func (h *HandlerV1HTTP) createRoomHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Недействительный запрос"})
 		return
 	}
+	err := h.services.Rooms.CreateRoomService(input)
+	if err != nil {
+		h.logger.Error(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	h.logger.Info("Комната создана", zap.String("room_name", input.Name))
 }
 
 func (h *HandlerV1HTTP) getRoomMessagesHandler(c *gin.Context) {

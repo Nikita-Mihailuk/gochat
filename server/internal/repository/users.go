@@ -46,3 +46,28 @@ func (r *usersRepository) Update(user *domain.User) error {
 	}
 	return nil
 }
+
+func (r *usersRepository) GetByRefreshToken(refreshToken string) (domain.Session, error) {
+	var session domain.Session
+	err := r.db.Where("refresh_token = ?", refreshToken).First(&session).Error
+	if err != nil {
+		return domain.Session{}, err
+	}
+	return session, nil
+}
+
+func (r *usersRepository) SetSession(session *domain.Session) error {
+	err := r.db.Save(session).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *usersRepository) DeleteSession(userID string) error {
+	err := r.db.Where("user_id = ?", userID).Delete(&domain.Session{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
