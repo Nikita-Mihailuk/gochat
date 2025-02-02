@@ -33,6 +33,7 @@ func Run() {
 	services := service.Services{
 		User:  service.NewUsersService(userRepo, config.Auth.RefreshTokenTTL, config.Auth.AccessTokenTTL),
 		Rooms: service.NewRoomsService(roomRepo),
+		Admin: service.NewAdminsService(userRepo, roomRepo),
 	}
 
 	httpHandler := httpp.NewHandlerHTTP(services)

@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -8,9 +9,14 @@ body {
   align-items: center;
   height: 100vh;
   padding: 20px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Container Styles */
 .container {
   background-color: #f4f4f4;
   border: 1px solid #000000;
@@ -22,13 +28,15 @@ body {
   text-align: center;
 }
 
+/* Heading Styles */
 h2 {
   color: #000000;
   margin-bottom: 20px;
 }
 
+/* Input Styles */
 input {
-  width: calc(100% - 20px); 
+  width: calc(100% - 20px);
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
@@ -36,6 +44,7 @@ input {
   font-size: 14px;
 }
 
+/* Button Styles */
 button {
   padding: 10px;
   background-color: #0000ff;
@@ -51,6 +60,7 @@ button:hover {
   background-color: #000080;
 }
 
+/* Link Styles */
 a {
   color: #0000ff;
   text-decoration: none;
@@ -60,6 +70,7 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Navigation Styles */
 nav {
   width: 100%;
   display: flex;
@@ -73,6 +84,7 @@ nav button {
   max-width: 120px;
 }
 
+/* Tab Content Styles */
 .tab-content {
   width: 100%;
   max-width: 600px;
@@ -83,6 +95,7 @@ nav button {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* List Styles */
 ul {
   list-style-type: none;
   padding: 0;
@@ -96,6 +109,7 @@ ul li {
   background-color: #ffffff;
 }
 
+/* Modal Styles */
 .modal {
   position: fixed;
   top: 0;
@@ -142,16 +156,18 @@ ul li {
   width: 100%;
 }
 
+/* Profile Photo Styles */
 #profile-photo {
   display: block;
   width: 150px;
   height: 150px;
   object-fit: cover;
-  border-radius: 50%; 
-  border: 2px solid #000000; 
-  margin: 0 auto 20px; 
+  border-radius: 50%;
+  border: 2px solid #000000;
+  margin: 0 auto 20px;
 }
 
+/* Message Avatar Styles */
 .message-avatar {
   width: 40px;
   height: 40px;
@@ -165,10 +181,12 @@ ul li {
   height: 100%;
   object-fit: cover;
 }
+
+/* Chat Room Styles */
 .chat-room {
   max-width: 900px;
   max-height: 750px;
-  position:absolute;
+  position: absolute;
 }
 
 .messages {
@@ -230,6 +248,7 @@ ul li {
   text-align: left;
 }
 
+/* Back Button Styles */
 .back-button {
   position: absolute;
   top: 10px;
@@ -242,29 +261,45 @@ ul li {
   padding: 5px 10px;
   cursor: pointer;
 }
+
+.home-button, .admin-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 14px;
+  background-color: #0000ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Input Group Styles */
 .input-group {
   display: flex;
   align-items: center;
-  gap: 10px; 
+  gap: 10px;
   margin-left: 16%;
 }
 
 .input-group input {
-  flex: 1; 
+  flex: 1;
 }
 
 .input-group .send-button {
-  flex-shrink: 0; 
-  height: 40px; 
+  flex-shrink: 0;
+  height: 40px;
 }
 
 .message.sender .message-content strong,
 .message.sender .message-avatar {
-  display: none; 
+  display: none;
 }
 
+/* Participants List Styles */
 .participants-list {
-  width: 15%; 
+  width: 15%;
   float: left;
   background-color: #f4f4f4;
   border-right: 1px solid #ccc;
@@ -308,7 +343,7 @@ ul li {
 
 .participants-list .participant span {
   font-size: 14px;
-  max-width: calc(100% - 50px); 
+  max-width: calc(100% - 50px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -320,9 +355,10 @@ ul li {
 }
 
 .chat-room .messages {
-  margin-left: 16%; 
+  margin-left: 16%;
 }
 
+/* Notification Styles */
 .notification {
   display: flex;
   justify-content: center;
@@ -337,9 +373,6 @@ ul li {
   text-align: center;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.notification {
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -354,6 +387,7 @@ ul li {
   }
 }
 
+/* Join Room Button Styles */
 .join-room-button {
   margin-left: 10px;
   padding: 5px 10px;
@@ -369,18 +403,77 @@ ul li {
   background-color: #0000ff;
 }
 
+/* Room Group Styles */
 .room-group {
   display: flex;
   align-items: center;
-  gap: 10px; 
-  
+  gap: 10px;
 }
 
 .room-group .room-name {
-  flex: 1; 
+  flex: 1;
 }
 
-.input-group .oin-room-button {
-  flex-shrink: 0; 
-  height: 40px; 
+.input-group .join-room-button {
+  flex-shrink: 0;
+  height: 40px;
+}
+
+/* Admin Table Styles */
+.admin-container {
+  background-color: #f4f4f4;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 20px;
+  width: auto; /* Автоматическая ширина */
+  max-width: 90vw; /* Ограничение по ширине экрана */
+  margin: 0 auto; /* Центрирование контейнера */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  overflow-x: auto; /* Добавляем горизонтальный скролл, если таблица слишком широкая */
+}
+
+/* Округление аватарок пользователей */
+.admin-table td img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Для таблицы */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow-x: visible; /* Убираем скролл, чтобы таблица могла расширяться */
+}
+
+.admin-table th, .admin-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  white-space: nowrap; /* Запрещаем перенос текста */
+}
+
+.admin-table th {
+  background-color: #f4f4f4;
+}
+
+.action-btn {
+  padding: 5px 10px;
+  margin: 2px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.edit-btn {
+  background-color: #ffa500;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #ff0000;
+  color: white;
 }

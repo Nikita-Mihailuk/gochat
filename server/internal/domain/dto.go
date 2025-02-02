@@ -2,6 +2,7 @@ package domain
 
 import (
 	"mime/multipart"
+	"time"
 )
 
 type InputUserDTO struct {
@@ -10,12 +11,18 @@ type InputUserDTO struct {
 	Name     string `json:"name,omitempty"`
 }
 
-type UpdateUserDTO struct {
+type UpdateProfileDTO struct {
 	UserId          uint
 	CurrentPassword string
 	NewPassword     string
 	NewName         string
 	FileHeader      *multipart.FileHeader
+}
+
+type UpdateUserDTO struct {
+	UserId     uint
+	NewName    string
+	FileHeader *multipart.FileHeader
 }
 
 type InputRoomDTO struct {
@@ -38,4 +45,12 @@ type InputMessageDTO struct {
 type Tokens struct {
 	AccessToken  string
 	RefreshToken string
+}
+
+type SessionDTO struct {
+	ID           uint      `json:"id"`
+	RefreshToken string    `json:"refresh_token"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	UserID       uint      `json:"user_id"`
+	UserRole     string    `json:"user_role"`
 }

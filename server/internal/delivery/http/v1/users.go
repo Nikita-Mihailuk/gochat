@@ -11,12 +11,12 @@ import (
 )
 
 func (h *HandlerV1HTTP) RegisterUserRouts(v1 *gin.RouterGroup) {
-	users := v1.Group("/users")
-	users.POST("/register", h.registerUserHandler)
-	users.POST("/login", h.loginUserHandler)
-	users.POST("/auth/refresh", h.refreshTokens)
 
-	authorizationGroup := users.Group("", middleware.CheckAccessToken())
+	v1.POST("/register", h.registerUserHandler)
+	v1.POST("/login", h.loginUserHandler)
+	v1.POST("/auth/refresh", h.refreshTokens)
+
+	authorizationGroup := v1.Group("/users", middleware.CheckAccessToken())
 	authorizationGroup.GET("/", h.getProfileUserHandler)
 	authorizationGroup.PATCH("/", h.updateProfileUserHandler)
 	authorizationGroup.DELETE("/logout", h.deleteUserSession)
@@ -89,7 +89,7 @@ func (h *HandlerV1HTTP) updateProfileUserHandler(c *gin.Context) {
 	userIDstr, _ := c.Get("user_id")
 	userID, _ := strconv.Atoi(fmt.Sprint(userIDstr))
 	file, _ := c.FormFile("photo")
-	var updateUser = domain.UpdateUserDTO{
+	var updateUser = domain.UpdateProfileDTO{
 		UserId:          uint(userID),
 		CurrentPassword: c.PostForm("current_password"),
 		NewPassword:     c.PostForm("new_password"),
@@ -140,15 +140,37 @@ func (h *HandlerV1HTTP) refreshTokens(c *gin.Context) {
 
 func (h *HandlerV1HTTP) deleteUserSession(c *gin.Context) {
 	userID, _ := c.Get("user_id")
-	err := h.services.User.DeleteSessionService(fmt.Sprint(userID))
+	err := h.services.User.DeleteSessionServiceByUserID(fmt.Sprint(userID))
 	if err != nil {
 		h.logger.Error("Ошибка при удалении сессии пользователя", zap.String("user_id", fmt.Sprint(userID)))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка при удалении сессии пользователя"})
 		return
 	}
+
+	c.SetCookie("access_token",
+		"",
+		-1,
+		"",
+		"",
+		false, // secure true при использовании HTTPS
+		true)
+
+	c.SetCookie("refresh_token",
+		"",
+		-1,
+		"",
+		"",
+		false, // secure true при использовании HTTPS
+		true)
+
 	h.logger.Info("Пользователь вышел из аккаунта", zap.String("user_id", fmt.Sprint(userID)))
 }
 
 func (h *HandlerV1HTTP) authCheck(c *gin.Context) {
-	c.Status(http.StatusOK)
+	role, err := c.Get("role")
+	if !err {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Роль не передана"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"role": role})
 }

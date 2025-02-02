@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gochat</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/iconApp.png" type="image/x-icon">
+</head>
+<body>
+    <div class="admin-container">
+        <h2>Панель администратора</h2>
+        <nav>
+            <button id="tab-users">Пользователи</button>
+            <button id="tab-rooms">Комнаты</button>
+            <button id="tab-sessions">Сессии</button>
+        </nav>
+        <div id="content"></div>
+        <button onclick="logout()" class="back-button">Выйти</button>
+        <button onclick="goToHome()" class="home-button">На главную</button>
+    </div>
+
+    <div id="update-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <h3>Изменение пользователя</h3>
+      
+          <label for="update-name">Новое имя:</label>
+          <input type="text" id="update-name" placeholder="Введите новое имя">
+      
+          <label for="profile-photo-upload">Фото профиля:</label>
+          <input type="file" id="profile-photo-upload" accept="image/*">
+      
+          <button onclick="saveUpdatedUser()">Сохранить</button>
+          <button onclick="closeUpdateDialog()">Отмена</button>
+        </div>
+    </div>
+
+    <div id="update-room-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <h3>Изменение комнаты</h3>
+      
+          <label for="update-name-room">Новое имя:</label>
+          <input type="text" id="update-name-room" placeholder="Введите новое имя">
+      
+          <button onclick="saveUpdatedRoomr()">Сохранить</button>
+          <button onclick="closeUpdateDialog()">Отмена</button>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>

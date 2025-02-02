@@ -7,11 +7,11 @@ import (
 type User interface {
 	RegisterUserService(input domain.InputUserDTO) error
 	LoginUserService(input domain.InputUserDTO) (domain.Tokens, error)
-	GetProfileService(id uint) (domain.User, error)
-	UpdateProfileService(update domain.UpdateUserDTO) (domain.User, error)
+	GetProfileService(userID uint) (domain.User, error)
+	UpdateProfileService(update domain.UpdateProfileDTO) (domain.User, error)
 
 	RefreshTokens(refreshToken string) (domain.Tokens, error)
-	DeleteSessionService(userID string) error
+	DeleteSessionServiceByUserID(userID string) error
 }
 
 type Rooms interface {
@@ -21,7 +21,20 @@ type Rooms interface {
 	CreateMessageService(input domain.InputMessageDTO) error
 }
 
+type Admin interface {
+	GetUsersService() ([]domain.User, error)
+	DeleteUserService(userId string) error
+	UpdateUserService(update domain.UpdateUserDTO) error
+
+	UpdateRoomService(input domain.Room) error
+	DeleteRoomService(roomID string) error
+
+	GetSessionsService() ([]domain.Session, error)
+	DeleteSessionService(sessionID string) error
+}
+
 type Services struct {
 	User  User
 	Rooms Rooms
+	Admin Admin
 }

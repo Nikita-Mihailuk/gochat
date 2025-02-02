@@ -23,7 +23,7 @@ func (r *roomsRepository) Create(room *domain.Room) error {
 
 func (r *roomsRepository) GetAllRooms() ([]domain.Room, error) {
 	var rooms []domain.Room
-	err := r.db.Find(&rooms).Error
+	err := r.db.Order("id").Find(&rooms).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +47,22 @@ func (r *roomsRepository) GetAllMessagesRoom(roomID string) ([]domain.OutputMess
 
 func (r *roomsRepository) CreateMessage(message *domain.Message) error {
 	err := r.db.Create(message).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *roomsRepository) UpdateRoom(room *domain.Room) error {
+	err := r.db.Save(room).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *roomsRepository) DeleteRoom(roomID string) error {
+	err := r.db.Delete(domain.Room{}, roomID).Error
 	if err != nil {
 		return err
 	}

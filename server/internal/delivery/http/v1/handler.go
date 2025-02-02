@@ -23,4 +23,5 @@ func (h *HandlerV1HTTP) InitHandlerV1HTTP(api *gin.RouterGroup) {
 	v1 := api.Group("/v1")
 	h.RegisterUserRouts(v1)
 	h.RegisterRoomsRouts(v1)
+	h.RegisterAdminRouts(v1)
 }

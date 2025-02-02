@@ -8,13 +8,17 @@ import (
 )
 
 type TokenManager interface {
-	NewJWT(userID string, ttl time.Duration) (string, error)
-	Parse(accessToken string) (*jwt.RegisteredClaims, error)
+	NewJWT(userID, role string, ttl time.Duration) (string, error)
+	Parse(accessToken string) (*CustomClaims, error)
 	NewRefreshToken() (string, error)
 }
 
 type Manager struct {
 	signingKey string
+}
+type CustomClaims struct {
+	Role string `json:"role"`
+	jwt.RegisteredClaims
 }
 
 func NewManager(signingKey string) (TokenManager, error) {
@@ -25,18 +29,21 @@ func NewManager(signingKey string) (TokenManager, error) {
 	return &Manager{signingKey: signingKey}, nil
 }
 
-func (m *Manager) NewJWT(userID string, ttl time.Duration) (string, error) {
-	claims := &jwt.RegisteredClaims{
-		Subject:   userID,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
+func (m *Manager) NewJWT(userID, role string, ttl time.Duration) (string, error) {
+	claims := &CustomClaims{
+		Role: role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   userID,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(m.signingKey))
 }
 
-func (m *Manager) Parse(accessToken string) (*jwt.RegisteredClaims, error) {
-	claims := &jwt.RegisteredClaims{}
+func (m *Manager) Parse(accessToken string) (*CustomClaims, error) {
+	claims := &CustomClaims{}
 	token, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(m.signingKey), nil
 	})

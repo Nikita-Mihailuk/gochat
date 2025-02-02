@@ -40,7 +40,7 @@ func (s *usersService) RegisterUserService(input domain.InputUserDTO) error {
 
 	err := s.repo.Create(&user)
 	if err != nil {
-		return err
+		return fmt.Errorf("Пользователь с такой почтой уже существует")
 	}
 	return nil
 }
@@ -59,17 +59,19 @@ func (s *usersService) LoginUserService(input domain.InputUserDTO) (domain.Token
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при создании нового refresh токена")
 	}
+	session, err := s.repo.GetSessionByUserID(user.ID)
+	if err != nil {
+		session.UserID = user.ID
+	}
+	session.RefreshToken = refreshToken
+	session.ExpiresAt = time.Now().Add(s.accessTokenTTL)
 
-	err = s.repo.SetSession(&domain.Session{
-		UserID:       user.ID,
-		RefreshToken: refreshToken,
-		ExpiresAt:    time.Now().Add(s.refreshTokenTTL),
-	})
+	err = s.repo.SetSession(&session)
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при создании сессии")
 	}
 
-	accessToken, err := s.tokenManager.NewJWT(strconv.Itoa(int(user.ID)), s.accessTokenTTL)
+	accessToken, err := s.tokenManager.NewJWT(strconv.Itoa(int(user.ID)), user.Role, s.accessTokenTTL)
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при создании нового access токен")
 	}
@@ -84,7 +86,7 @@ func (s *usersService) GetProfileService(id uint) (domain.User, error) {
 	return user, nil
 }
 
-func (s *usersService) UpdateProfileService(update domain.UpdateUserDTO) (domain.User, error) {
+func (s *usersService) UpdateProfileService(update domain.UpdateProfileDTO) (domain.User, error) {
 	user, err := s.repo.GetByID(update.UserId)
 	if err != nil {
 		return domain.User{}, err
@@ -106,7 +108,7 @@ func (s *usersService) UpdateProfileService(update domain.UpdateUserDTO) (domain
 
 	if update.FileHeader != nil {
 		filePath := fmt.Sprintf("uploads/%d_%s", user.ID, update.FileHeader.Filename)
-		if err = s.saveFile(update.FileHeader, filePath); err != nil {
+		if err = SaveFile(update.FileHeader, filePath); err != nil {
 			return domain.User{}, fmt.Errorf("Ошибка сохранения фото")
 		}
 		user.PhotoURL = filePath
@@ -120,7 +122,47 @@ func (s *usersService) UpdateProfileService(update domain.UpdateUserDTO) (domain
 	return user, nil
 }
 
-func (s *usersService) saveFile(fileHeader *multipart.FileHeader, path string) error {
+func (s *usersService) RefreshTokens(refreshToken string) (domain.Tokens, error) {
+	session, err := s.repo.GetSessionByRefreshToken(refreshToken)
+	if err != nil {
+		return domain.Tokens{}, fmt.Errorf("Ошибка при получении сессии пользователя")
+	}
+
+	newRefreshToken, err := s.tokenManager.NewRefreshToken()
+	if err != nil {
+		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении refresh токена")
+	}
+
+	newAccessToken, err := s.tokenManager.NewJWT(strconv.Itoa(int(session.UserID)), session.UserRole, s.accessTokenTTL)
+	if err != nil {
+		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении access токена")
+	}
+
+	err = s.repo.SetSession(&domain.Session{
+		ID:           session.ID,
+		RefreshToken: newRefreshToken,
+		ExpiresAt:    time.Now().Add(s.refreshTokenTTL),
+		UserID:       session.UserID,
+	})
+	if err != nil {
+		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении сессии")
+	}
+
+	return domain.Tokens{AccessToken: newAccessToken, RefreshToken: newRefreshToken}, nil
+}
+func (s *usersService) DeleteSessionServiceByUserID(userID string) error {
+	err := s.repo.DeleteSessionByUserID(userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *usersService) GetTokenManager() auth.TokenManager {
+	return s.tokenManager
+}
+
+func SaveFile(fileHeader *multipart.FileHeader, path string) error {
 	src, err := fileHeader.Open()
 	if err != nil {
 		return err
@@ -137,42 +179,4 @@ func (s *usersService) saveFile(fileHeader *multipart.FileHeader, path string) e
 		return err
 	}
 	return nil
-}
-
-func (s *usersService) RefreshTokens(refreshToken string) (domain.Tokens, error) {
-	session, err := s.repo.GetByRefreshToken(refreshToken)
-	if err != nil {
-		return domain.Tokens{}, fmt.Errorf("Ошибка при получении сессии пользователя")
-	}
-
-	newRefreshToken, err := s.tokenManager.NewRefreshToken()
-	if err != nil {
-		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении refresh токена")
-	}
-
-	newAccessToken, err := s.tokenManager.NewJWT(strconv.Itoa(int(session.UserID)), s.accessTokenTTL)
-	if err != nil {
-		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении access токена")
-	}
-
-	session.RefreshToken = newRefreshToken
-	session.ExpiresAt = time.Now().Add(s.refreshTokenTTL)
-
-	err = s.repo.SetSession(&session)
-	if err != nil {
-		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении сессии")
-	}
-
-	return domain.Tokens{AccessToken: newAccessToken, RefreshToken: newRefreshToken}, nil
-}
-func (s *usersService) DeleteSessionService(userID string) error {
-	err := s.repo.DeleteSession(userID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *usersService) GetTokenManager() auth.TokenManager {
-	return s.tokenManager
 }

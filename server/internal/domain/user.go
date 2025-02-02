@@ -10,4 +10,5 @@ type User struct {
 	PhotoURL     string    `json:"photo_url"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+	Role         string    `gorm:"default:'user'" json:"role"`
 }

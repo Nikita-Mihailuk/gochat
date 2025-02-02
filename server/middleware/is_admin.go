@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func CheckAccessToken() gin.HandlerFunc {
+func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessTokenCookie, err := c.Request.Cookie("access_token")
 		if err != nil {
@@ -17,15 +17,18 @@ func CheckAccessToken() gin.HandlerFunc {
 		accessToken := accessTokenCookie.Value
 		tokenManager := token_manager.GetTokenManager()
 		claims, err := tokenManager.Parse(accessToken)
-
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный или истекший access токен"})
 			c.Abort()
 			return
 		}
 
-		c.Set("user_id", claims.Subject)
-		c.Set("role", claims.Role)
+		if claims.Role != "admin" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Нет доступа"})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }

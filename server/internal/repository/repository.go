@@ -8,9 +8,15 @@ type User interface {
 	GetByID(id uint) (domain.User, error)
 	Update(user *domain.User) error
 
-	GetByRefreshToken(refreshToken string) (domain.Session, error)
+	GetSessionByRefreshToken(refreshToken string) (domain.SessionDTO, error)
 	SetSession(session *domain.Session) error
-	DeleteSession(userId string) error
+	GetSessionByUserID(userID uint) (domain.Session, error)
+	DeleteSessionByUserID(userId string) error
+
+	GetAllUsers() ([]domain.User, error)
+	DeleteUser(userID string) error
+	GetAllSessions() ([]domain.Session, error)
+	DeleteSession(sessionID string) error
 }
 
 type Room interface {
@@ -18,4 +24,7 @@ type Room interface {
 	GetAllRooms() ([]domain.Room, error)
 	GetAllMessagesRoom(roomID string) ([]domain.OutputMessageDTO, error)
 	CreateMessage(message *domain.Message) error
+
+	UpdateRoom(room *domain.Room) error
+	DeleteRoom(roomID string) error
 }
