@@ -29,11 +29,12 @@ func Run() {
 
 	userRepo := repository.NewUsersRepository(db)
 	roomRepo := repository.NewRoomsRepository(db)
+	sessionRepo := repository.NewSessionRepository(db)
 
 	services := service.Services{
-		User:  service.NewUsersService(userRepo, config.Auth.RefreshTokenTTL, config.Auth.AccessTokenTTL),
+		User:  service.NewUsersService(userRepo, sessionRepo, config.Auth.RefreshTokenTTL, config.Auth.AccessTokenTTL),
 		Rooms: service.NewRoomsService(roomRepo),
-		Admin: service.NewAdminsService(userRepo, roomRepo),
+		Admin: service.NewAdminsService(userRepo, sessionRepo, roomRepo),
 	}
 
 	httpHandler := httpp.NewHandlerHTTP(services)

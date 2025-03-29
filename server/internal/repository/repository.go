@@ -7,24 +7,24 @@ type User interface {
 	GetByEmail(email string) (domain.User, error)
 	GetByID(id uint) (domain.User, error)
 	Update(user *domain.User) error
-
-	GetSessionByRefreshToken(refreshToken string) (domain.SessionDTO, error)
-	SetSession(session *domain.Session) error
-	GetSessionByUserID(userID uint) (domain.Session, error)
-	DeleteSessionByUserID(userId string) error
-
 	GetAllUsers() ([]domain.User, error)
-	DeleteUser(userID string) error
-	GetAllSessions() ([]domain.Session, error)
-	DeleteSession(sessionID string) error
+	Delete(userID string) error
 }
 
 type Room interface {
 	Create(room *domain.Room) error
-	GetAllRooms() ([]domain.Room, error)
-	GetAllMessagesRoom(roomID string) ([]domain.OutputMessageDTO, error)
+	GetAll() ([]domain.Room, error)
+	GetAllMessages(roomID string) ([]domain.OutputMessageDTO, error)
 	CreateMessage(message *domain.Message) error
+	Update(room *domain.Room) error
+	Delete(roomID string) error
+}
 
-	UpdateRoom(room *domain.Room) error
-	DeleteRoom(roomID string) error
+type Session interface {
+	GetByRefreshToken(refreshToken string) (domain.SessionDTO, error)
+	Set(session *domain.Session) error
+	GetByUserID(userID uint) (domain.Session, error)
+	DeleteByUserID(userId string) error
+	GetAll() ([]domain.Session, error)
+	DeleteByID(sessionID string) error
 }

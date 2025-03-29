@@ -21,7 +21,7 @@ func (r *roomsRepository) Create(room *domain.Room) error {
 	return nil
 }
 
-func (r *roomsRepository) GetAllRooms() ([]domain.Room, error) {
+func (r *roomsRepository) GetAll() ([]domain.Room, error) {
 	var rooms []domain.Room
 	err := r.db.Order("id").Find(&rooms).Error
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *roomsRepository) GetAllRooms() ([]domain.Room, error) {
 	return rooms, nil
 }
 
-func (r *roomsRepository) GetAllMessagesRoom(roomID string) ([]domain.OutputMessageDTO, error) {
+func (r *roomsRepository) GetAllMessages(roomID string) ([]domain.OutputMessageDTO, error) {
 	var messages []domain.OutputMessageDTO
 	err := r.db.Table("messages").
 		Select("messages.*, users.photo_url AS user_avatar, users.name AS user_name").
@@ -53,7 +53,7 @@ func (r *roomsRepository) CreateMessage(message *domain.Message) error {
 	return nil
 }
 
-func (r *roomsRepository) UpdateRoom(room *domain.Room) error {
+func (r *roomsRepository) Update(room *domain.Room) error {
 	err := r.db.Save(room).Error
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (r *roomsRepository) UpdateRoom(room *domain.Room) error {
 	return nil
 }
 
-func (r *roomsRepository) DeleteRoom(roomID string) error {
+func (r *roomsRepository) Delete(roomID string) error {
 	err := r.db.Delete(domain.Room{}, roomID).Error
 	if err != nil {
 		return err

@@ -21,7 +21,7 @@ func NewRoomsService(repo repository.Room) Rooms {
 }
 
 func (s *roomsService) GetRoomsService() ([]domain.Room, error) {
-	rooms, err := s.repo.GetAllRooms()
+	rooms, err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (s *roomsService) CreateRoomService(input domain.InputRoomDTO) error {
 }
 
 func (s *roomsService) GetRoomMessageService(roomId string) ([]domain.OutputMessageDTO, error) {
-	messages, err := s.repo.GetAllMessagesRoom(roomId)
+	messages, err := s.repo.GetAllMessages(roomId)
 	if err != nil {
 		return nil, err
 	}

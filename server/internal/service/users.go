@@ -17,16 +17,18 @@ import (
 )
 
 type usersService struct {
-	repo            repository.User
+	userRepo        repository.User
+	sessionRepo     repository.Session
 	tokenManager    auth.TokenManager
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
 	logger          *zap.Logger
 }
 
-func NewUsersService(repo repository.User, refreshTokenTTL time.Duration, accessTokenTTL time.Duration) User {
+func NewUsersService(userRepo repository.User, sessionRepo repository.Session, refreshTokenTTL time.Duration, accessTokenTTL time.Duration) User {
 	return &usersService{
-		repo:            repo,
+		userRepo:        userRepo,
+		sessionRepo:     sessionRepo,
 		tokenManager:    token_manager.GetTokenManager(),
 		accessTokenTTL:  accessTokenTTL,
 		refreshTokenTTL: refreshTokenTTL,
@@ -38,7 +40,7 @@ func (s *usersService) RegisterUserService(input domain.InputUserDTO) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	user := domain.User{Email: input.Email, Name: input.Name, PasswordHash: string(hashedPassword)}
 
-	err := s.repo.Create(&user)
+	err := s.userRepo.Create(&user)
 	if err != nil {
 		return fmt.Errorf("Пользователь с такой почтой уже существует")
 	}
@@ -46,7 +48,7 @@ func (s *usersService) RegisterUserService(input domain.InputUserDTO) error {
 }
 
 func (s *usersService) LoginUserService(input domain.InputUserDTO) (domain.Tokens, error) {
-	user, err := s.repo.GetByEmail(input.Email)
+	user, err := s.userRepo.GetByEmail(input.Email)
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Неверный логин или пароль")
 	}
@@ -59,14 +61,14 @@ func (s *usersService) LoginUserService(input domain.InputUserDTO) (domain.Token
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при создании нового refresh токена")
 	}
-	session, err := s.repo.GetSessionByUserID(user.ID)
+	session, err := s.sessionRepo.GetByUserID(user.ID)
 	if err != nil {
 		session.UserID = user.ID
 	}
 	session.RefreshToken = refreshToken
 	session.ExpiresAt = time.Now().Add(s.accessTokenTTL)
 
-	err = s.repo.SetSession(&session)
+	err = s.sessionRepo.Set(&session)
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при создании сессии")
 	}
@@ -79,7 +81,7 @@ func (s *usersService) LoginUserService(input domain.InputUserDTO) (domain.Token
 }
 
 func (s *usersService) GetProfileService(id uint) (domain.User, error) {
-	user, err := s.repo.GetByID(id)
+	user, err := s.userRepo.GetByID(id)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -87,7 +89,7 @@ func (s *usersService) GetProfileService(id uint) (domain.User, error) {
 }
 
 func (s *usersService) UpdateProfileService(update domain.UpdateProfileDTO) (domain.User, error) {
-	user, err := s.repo.GetByID(update.UserId)
+	user, err := s.userRepo.GetByID(update.UserId)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -115,7 +117,7 @@ func (s *usersService) UpdateProfileService(update domain.UpdateProfileDTO) (dom
 	}
 	user.UpdatedAt = time.Now()
 
-	err = s.repo.Update(&user)
+	err = s.userRepo.Update(&user)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("Ошибка обновления профиля")
 	}
@@ -123,7 +125,7 @@ func (s *usersService) UpdateProfileService(update domain.UpdateProfileDTO) (dom
 }
 
 func (s *usersService) RefreshTokens(refreshToken string) (domain.Tokens, error) {
-	session, err := s.repo.GetSessionByRefreshToken(refreshToken)
+	session, err := s.sessionRepo.GetByRefreshToken(refreshToken)
 	if err != nil {
 		return domain.Tokens{}, fmt.Errorf("Ошибка при получении сессии пользователя")
 	}
@@ -138,7 +140,7 @@ func (s *usersService) RefreshTokens(refreshToken string) (domain.Tokens, error)
 		return domain.Tokens{}, fmt.Errorf("Ошибка при обновлении access токена")
 	}
 
-	err = s.repo.SetSession(&domain.Session{
+	err = s.sessionRepo.Set(&domain.Session{
 		ID:           session.ID,
 		RefreshToken: newRefreshToken,
 		ExpiresAt:    time.Now().Add(s.refreshTokenTTL),
@@ -151,7 +153,7 @@ func (s *usersService) RefreshTokens(refreshToken string) (domain.Tokens, error)
 	return domain.Tokens{AccessToken: newAccessToken, RefreshToken: newRefreshToken}, nil
 }
 func (s *usersService) DeleteSessionServiceByUserID(userID string) error {
-	err := s.repo.DeleteSessionByUserID(userID)
+	err := s.sessionRepo.DeleteByUserID(userID)
 	if err != nil {
 		return err
 	}

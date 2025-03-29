@@ -10,16 +10,18 @@ import (
 )
 
 type adminsService struct {
-	userRepo repository.User
-	roomRepo repository.Room
-	logger   *zap.Logger
+	userRepo    repository.User
+	roomRepo    repository.Room
+	sessionRepo repository.Session
+	logger      *zap.Logger
 }
 
-func NewAdminsService(userRepo repository.User, roomRepo repository.Room) Admin {
+func NewAdminsService(userRepo repository.User, sessionRepo repository.Session, roomRepo repository.Room) Admin {
 	return &adminsService{
-		userRepo: userRepo,
-		roomRepo: roomRepo,
-		logger:   logging.GetLogger(),
+		userRepo:    userRepo,
+		roomRepo:    roomRepo,
+		sessionRepo: sessionRepo,
+		logger:      logging.GetLogger(),
 	}
 }
 
@@ -32,11 +34,11 @@ func (s *adminsService) GetUsersService() ([]domain.User, error) {
 }
 
 func (s *adminsService) DeleteUserService(userId string) error {
-	err := s.userRepo.DeleteUser(userId)
+	err := s.userRepo.Delete(userId)
 	if err != nil {
 		return fmt.Errorf("Ошибка при удалении пользователя")
 	}
-	err = s.userRepo.DeleteSessionByUserID(userId)
+	err = s.sessionRepo.DeleteByUserID(userId)
 	if err != nil {
 		return fmt.Errorf("Ошибка при удалении сессии пользователя")
 	}
@@ -44,7 +46,7 @@ func (s *adminsService) DeleteUserService(userId string) error {
 }
 
 func (s *adminsService) GetSessionsService() ([]domain.Session, error) {
-	sessions, err := s.userRepo.GetAllSessions()
+	sessions, err := s.sessionRepo.GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("Ошибка при получении сессий")
 	}
@@ -52,7 +54,7 @@ func (s *adminsService) GetSessionsService() ([]domain.Session, error) {
 }
 
 func (s *adminsService) UpdateRoomService(input domain.Room) error {
-	err := s.roomRepo.UpdateRoom(&input)
+	err := s.roomRepo.Update(&input)
 	if err != nil {
 		return fmt.Errorf("Комната с таким именем уже существует")
 	}
@@ -60,7 +62,7 @@ func (s *adminsService) UpdateRoomService(input domain.Room) error {
 }
 
 func (s *adminsService) DeleteRoomService(roomID string) error {
-	err := s.roomRepo.DeleteRoom(roomID)
+	err := s.roomRepo.Delete(roomID)
 	if err != nil {
 		return fmt.Errorf("Ошибка при удалении комнаты")
 	}
@@ -94,7 +96,7 @@ func (s *adminsService) UpdateUserService(update domain.UpdateUserDTO) error {
 }
 
 func (s *adminsService) DeleteSessionService(sessionID string) error {
-	err := s.userRepo.DeleteSession(sessionID)
+	err := s.sessionRepo.DeleteByID(sessionID)
 	if err != nil {
 		return fmt.Errorf("Ошибка при удалении сессии")
 	}

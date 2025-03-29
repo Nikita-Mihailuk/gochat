@@ -68,7 +68,6 @@ function displayNotification(message) {
 }
   
 function displayMessage(message) {
-    console.log(message)
     const messagesDiv = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
