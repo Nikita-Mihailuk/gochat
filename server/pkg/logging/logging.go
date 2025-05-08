@@ -34,7 +34,7 @@ func init() {
 		EncodeCaller: zapcore.ShortCallerEncoder,
 	})
 
-	logFile, err := os.OpenFile("pkg/logging/logs/all.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile("./pkg/logging/logs/all.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
 	}

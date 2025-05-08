@@ -1,8 +1,8 @@
 listen:
-  bindIp: 127.0.0.1
+  bindIp: 0.0.0.0
   port: 8080
 database:
-  host: localhost
+  host: db
   port: 5432
   userName: postgres
   password: "00000000"

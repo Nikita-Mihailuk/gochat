@@ -111,7 +111,7 @@ async function loadProfile() {
       document.getElementById("profile-photo").src = photo_url;
       document.getElementById(
         "profile-email"
-      ).textContent = `Эл.почта: ${profile.email}`;
+      ).textContent = `Email: ${profile.email}`;
       document.getElementById(
         "profile-name-display"
       ).textContent = `Имя: ${profile.name}`;
